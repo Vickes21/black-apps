@@ -9,6 +9,7 @@ export const apps = pgTable('apps', {
   name: text('name').notNull(),
   embbedUrl: text('embbed_url').notNull(),
   imageUrl: text('image_url').notNull(),
+  customDomain: text('custom_domain').unique(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()).notNull(),
 });

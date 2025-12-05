@@ -18,6 +18,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createAppSchema.parse(body);
 
+    // Verifica se o domínio customizado já está em uso
+    if (validatedData.customDomain) {
+      const existingApp = await db.query.apps.findFirst({
+        where: (apps, { eq }) => eq(apps.customDomain, validatedData.customDomain!),
+      });
+
+      if (existingApp) {
+        return NextResponse.json(
+          { error: 'Este domínio já está em uso' },
+          { status: 409 }
+        );
+      }
+    }
+
     const newApp = await db
       .insert(apps)
       .values({
@@ -25,6 +39,7 @@ export async function POST(request: NextRequest) {
         name: validatedData.name,
         embbedUrl: validatedData.embbedUrl,
         imageUrl: validatedData.imageUrl,
+        customDomain: validatedData.customDomain || null,
       })
       .returning();
 

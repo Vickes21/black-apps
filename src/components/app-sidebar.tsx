@@ -19,11 +19,6 @@ import { UserButton } from "@clerk/nextjs";
 
 const menuItems = [
   {
-    title: "Início",
-    url: "/",
-    icon: Home,
-  },
-  {
     title: "Meus Apps",
     url: "/apps",
     icon: LayoutGrid,

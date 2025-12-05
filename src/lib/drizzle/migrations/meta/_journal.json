@@ -8,6 +8,13 @@
       "when": 1764968650645,
       "tag": "0000_stiff_white_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1764975099076,
+      "tag": "0001_giant_sunset_bain",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Pencil, Trash2, Copy } from "lucide-react";
+import { ExternalLink, Pencil, Trash2, Copy, Settings } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -52,16 +52,26 @@ export function AppCard({ app }: AppCardProps) {
     router.push(`/apps/${app.id}/edit`);
   }
 
+  function handleSettings() {
+    router.push(`/apps/${app.id}/settings`);
+  }
+
   function handleView() {
     router.push(`/app/${app.id}`);
   }
 
   async function handleCopyUrl() {
-    const url = `${window.location.origin}/app/${app.id}`;
+    // Usa domínio customizado se existir, senão usa URL padrão
+    const url = app.customDomain 
+      ? `https://${app.customDomain}`
+      : `${window.location.origin}/app/${app.id}`;
+    
     try {
       await navigator.clipboard.writeText(url);
       toast.success("URL copiada!", {
-        description: "O link do app foi copiado para a área de transferência.",
+        description: app.customDomain 
+          ? `${url} foi copiado.`
+          : "O link do app foi copiado para a área de transferência.",
       });
     } catch (error) {
       toast.error("Erro ao copiar URL", {
@@ -70,7 +80,11 @@ export function AppCard({ app }: AppCardProps) {
     }
   }
 
-  const appUrl = typeof window !== 'undefined' ? `${window.location.origin}/app/${app.id}` : `/app/${app.id}`;
+  const appUrl = app.customDomain 
+    ? `https://${app.customDomain}`
+    : typeof window !== 'undefined' 
+      ? `${window.location.origin}/app/${app.id}` 
+      : `/app/${app.id}`;
 
   return (
     <Card className="overflow-hidden">
@@ -115,6 +129,14 @@ export function AppCard({ app }: AppCardProps) {
           title="Copiar URL"
         >
           <Copy className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleSettings}
+          title="Configurações"
+        >
+          <Settings className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"

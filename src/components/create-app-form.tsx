@@ -27,6 +27,7 @@ export function CreateAppForm() {
       name: '',
       embbedUrl: '',
       imageUrl: '',
+      customDomain: '',
     },
   });
 
@@ -111,6 +112,28 @@ export function CreateAppForm() {
                 />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="customDomain"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Domínio Customizado (Opcional)</FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="meuapp.com ou app.meudominio.com"
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.value.toLowerCase().trim())}
+                />
+              </FormControl>
+              <FormMessage />
+              <p className="text-xs text-muted-foreground">
+                Digite apenas o domínio, sem http:// ou https://. Deixe vazio para usar URL padrão.
+              </p>
             </FormItem>
           )}
         />
