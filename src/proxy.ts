@@ -13,8 +13,6 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next()
   }
   await auth.protect()
-}, {
-  domain: process.env.VERCEL_URL || 'localhost:3000'
 })
 
 
