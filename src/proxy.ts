@@ -3,7 +3,9 @@ import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
   '/app(.*)',
-])
+  '/sign-in(.*)',
+  '/sign-up(.*)'
+]);
 
 
 export default clerkMiddleware(async (auth, req) => {
@@ -11,6 +13,8 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next()
   }
   await auth.protect()
+}, {
+  domain: process.env.VERCEL_URL || 'localhost:3000'
 })
 
 
