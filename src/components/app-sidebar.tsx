@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, PlusCircle, LayoutGrid } from "lucide-react";
+import { Home, PlusCircle, LayoutGrid, Globe } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -27,6 +27,11 @@ const menuItems = [
     title: "Criar App",
     url: "/apps/create",
     icon: PlusCircle,
+  },
+  {
+    title: "Domínios",
+    url: "/domains",
+    icon: Globe,
   },
 ];
 

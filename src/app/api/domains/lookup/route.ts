@@ -3,12 +3,17 @@ import { db } from "@/lib/drizzle";
 import { apps } from "@/lib/drizzle/schemas/apps";
 import { eq } from "drizzle-orm";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ domain: string }> }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const { domain } = await params;
+    const { searchParams } = new URL(request.url);
+    const domain = searchParams.get('domain');
+
+    if (!domain) {
+      return NextResponse.json(
+        { error: "Domain parameter is required" },
+        { status: 400 }
+      );
+    }
 
     // Busca app pelo domínio customizado
     const app = await db.query.apps.findFirst({

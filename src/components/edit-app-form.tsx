@@ -24,31 +24,32 @@ import {
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { TDomain } from '@/lib/drizzle/schemas';
+import { TDomain, TApp } from '@/lib/drizzle/schemas';
 
-interface CreateAppFormProps {
+interface EditAppFormProps {
+  app: TApp;
   domains: TDomain[];
 }
 
-export function CreateAppForm({ domains }: CreateAppFormProps) {
+export function EditAppForm({ app, domains }: EditAppFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<TCreateApp>({
     resolver: zodResolver(createAppSchema),
     defaultValues: {
-      name: '',
-      embbedUrl: '',
-      imageUrl: '',
-      domainId: null,
+      name: app.name,
+      embbedUrl: app.embbedUrl,
+      imageUrl: app.imageUrl,
+      domainId: app.domainId || null,
     },
   });
 
   async function onSubmit(values: TCreateApp) {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/apps', {
-        method: 'POST',
+      const response = await fetch(`/api/apps/${app.id}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -57,18 +58,18 @@ export function CreateAppForm({ domains }: CreateAppFormProps) {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Erro ao criar app');
+        throw new Error(error.error || 'Erro ao atualizar app');
       }
 
-      toast.success('App criado com sucesso!', {
-        description: `${values.name} foi adicionado aos seus apps.`,
+      toast.success('App atualizado com sucesso!', {
+        description: `${values.name} foi atualizado.`,
       });
       
-      form.reset();
+      router.push('/apps');
       router.refresh();
     } catch (error) {
-      console.error('Erro ao criar app:', error);
-      toast.error('Erro ao criar app', {
+      console.error('Erro ao atualizar app:', error);
+      toast.error('Erro ao atualizar app', {
         description: error instanceof Error ? error.message : 'Ocorreu um erro inesperado.',
       });
     } finally {
@@ -165,9 +166,20 @@ export function CreateAppForm({ domains }: CreateAppFormProps) {
           )}
         />
 
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? 'Criando...' : 'Criar App'}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push('/apps')}
+            disabled={isLoading}
+            className="flex-1"
+          >
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={isLoading} className="flex-1">
+            {isLoading ? 'Salvando...' : 'Salvar Alterações'}
+          </Button>
+        </div>
       </form>
     </Form>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Pencil, Trash2, Copy, Settings } from "lucide-react";
+import { ExternalLink, Pencil, Trash2, Copy } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,10 +50,6 @@ export function AppCard({ app }: AppCardProps) {
 
   function handleEdit() {
     router.push(`/apps/${app.id}/edit`);
-  }
-
-  function handleSettings() {
-    router.push(`/apps/${app.id}/settings`);
   }
 
   function handleView() {
@@ -129,14 +125,6 @@ export function AppCard({ app }: AppCardProps) {
           title="Copiar URL"
         >
           <Copy className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleSettings}
-          title="Configurações"
-        >
-          <Settings className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"

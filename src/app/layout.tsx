@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Black House Apps",
+  title: "Black Apps",
   description: "Gerencie seus apps",
 };
 

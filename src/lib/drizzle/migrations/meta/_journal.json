@@ -15,6 +15,27 @@
       "when": 1764975099076,
       "tag": "0001_giant_sunset_bain",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765027869342,
+      "tag": "0002_slim_adam_warlock",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1765028568711,
+      "tag": "0003_open_skin",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1765030311709,
+      "tag": "0004_reflective_chameleon",
+      "breakpoints": true
     }
   ]
 }

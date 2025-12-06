@@ -10,8 +10,8 @@
  * 4. Adicione rotas customizadas ou use Workers Routes
  */
 
-// URL do seu servidor Next.js (configure como variável de ambiente)
-const NEXTJS_URL = 'https://app.seudominio.com'; // ALTERE AQUI
+const NEXTJS_URL = 'https://app.blackapps.online'; // ALTERE AQUI
+
 
 export default {
   async fetch(request, env) {
@@ -24,15 +24,25 @@ export default {
     try {
       // 1. Consulta qual app tem este domínio
       const apiUrl = `${nextjsUrl}/api/domains/${hostname}`;
+      
+      console.log('Fetching API:', apiUrl);
+      
       const apiResponse = await fetch(apiUrl, {
         headers: {
           'User-Agent': 'Cloudflare-Worker-Proxy/1.0',
         },
+        // Adiciona timeout
+        signal: AbortSignal.timeout(10000), // 10 segundos
       });
 
+      console.log('API Response status:', apiResponse.status);
+
       if (!apiResponse.ok) {
+        const errorText = await apiResponse.text();
+        console.error('API Error:', errorText);
+        
         // Domínio não encontrado, retorna erro 404
-        return new Response('Domain not configured', {
+        return new Response(`Domain not configured: ${hostname}\n\nAPI Error: ${errorText}`, {
           status: 404,
           headers: {
             'Content-Type': 'text/plain',
@@ -41,9 +51,11 @@ export default {
       }
 
       const { appId } = await apiResponse.json();
+      console.log('App ID:', appId);
 
       // 2. Monta URL do app no Next.js
       const targetUrl = `${nextjsUrl}/app/${appId}${url.pathname}${url.search}`;
+      console.log('Target URL:', targetUrl);
 
       // 3. Faz proxy da requisição
       const targetRequest = new Request(targetUrl, {
@@ -58,7 +70,12 @@ export default {
       targetRequest.headers.set('X-Forwarded-Host', hostname);
       targetRequest.headers.set('X-Forwarded-Proto', 'https');
 
-      const response = await fetch(targetRequest);
+      console.log('Fetching target...');
+      const response = await fetch(targetRequest, {
+        signal: AbortSignal.timeout(30000), // 30 segundos
+      });
+      
+      console.log('Target response status:', response.status);
 
       // 4. Cria nova resposta com headers ajustados
       const newResponse = new Response(response.body, response);
@@ -75,12 +92,15 @@ export default {
     } catch (error) {
       // Erro no proxy
       console.error('Worker error:', error);
-      return new Response('Internal Server Error', {
-        status: 500,
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-      });
+      return new Response(
+        `Internal Server Error\n\nError: ${error.message}\n\nStack: ${error.stack}\n\nNext.js URL: ${nextjsUrl}\nHostname: ${hostname}`,
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+        }
+      );
     }
   },
 };
