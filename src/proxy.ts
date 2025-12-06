@@ -14,6 +14,9 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next()
   }
   await auth.protect()
+}, {
+  afterSignInUrl: '/apps',
+  afterSignUpUrl: '/apps'
 })
 
 
