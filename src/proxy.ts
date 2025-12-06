@@ -17,11 +17,6 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next()
   }
   return redirectToSignIn()
-}, {
-  afterSignInUrl: '/apps',
-  afterSignUpUrl: '/apps',
-  signInUrl: '/auth/sign-in',
-  signUpUrl: '/auth/sign-up'
 })
 
 
