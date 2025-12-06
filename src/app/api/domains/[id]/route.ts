@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/lib/drizzle';
-import { domains } from '@/lib/drizzle/schemas';
+import { domains, apps } from '@/lib/drizzle/schemas';
 import { CloudflareService } from '@/lib/cloudflare';
 import { eq, and } from 'drizzle-orm';
 
@@ -56,6 +56,56 @@ export async function DELETE(
 
     return NextResponse.json(
       { error: 'Failed to delete domain' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+
+    const domain = await db.query.domains.findFirst({
+      where: and(
+        eq(domains.id, id),
+        eq(domains.userId, userId)
+      ),
+    });
+
+    if (!domain) {
+      return NextResponse.json({ error: 'Domain not found' }, { status: 404 });
+    }
+
+    const userApps = await db.query.apps.findMany({
+      where: eq(apps.userId, userId),
+      orderBy: (apps, { desc }) => [desc(apps.createdAt)],
+    });
+
+    let linkedApp = null;
+    if (domain.appId) {
+      linkedApp = await db.query.apps.findFirst({
+        where: eq(apps.id, domain.appId),
+      });
+    }
+
+    return NextResponse.json({
+      domain,
+      apps: userApps,
+      linkedApp,
+    });
+  } catch (error) {
+    console.error('Error fetching domain:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch domain' },
       { status: 500 }
     );
   }

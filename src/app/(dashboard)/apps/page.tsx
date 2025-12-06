@@ -1,22 +1,40 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { db } from "@/lib/drizzle";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 import { AppCard } from "@/components/app-card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
+import { TApp } from "@/lib/drizzle/schemas";
+import { useUser } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
-export default async function AppsPage() {
-  const { userId } = await auth();
+export default function AppsPage() {
+  const { isLoaded, isSignedIn } = useUser();
 
-  if (!userId) {
+  const { data: apps = [], isLoading } = useQuery<TApp[]>({
+    queryKey: ["apps"],
+    queryFn: async () => {
+      const response = await fetch("/api/apps");
+      if (!response.ok) throw new Error("Failed to fetch apps");
+      return response.json();
+    },
+    enabled: isSignedIn,
+  });
+
+  if (isLoaded && !isSignedIn) {
     redirect("/sign-in");
   }
 
-  const apps = await db.query.apps.findMany({
-    where: (apps, { eq }) => eq(apps.userId, userId),
-    orderBy: (apps, { desc }) => [desc(apps.createdAt)],
-  });
+  if (isLoading || !isLoaded) {
+    return (
+      <div className="container mx-auto max-w-6xl py-10">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-muted-foreground">Carregando...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto max-w-6xl py-10">

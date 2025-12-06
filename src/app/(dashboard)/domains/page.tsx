@@ -1,22 +1,40 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { db } from "@/lib/drizzle";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 import { DomainCard } from "@/components/domain-card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
+import { TDomain } from "@/lib/drizzle/schemas";
+import { useUser } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
-export default async function DomainsPage() {
-  const { userId } = await auth();
+export default function DomainsPage() {
+  const { isLoaded, isSignedIn } = useUser();
 
-  if (!userId) {
+  const { data: domains = [], isLoading } = useQuery<TDomain[]>({
+    queryKey: ["domains"],
+    queryFn: async () => {
+      const response = await fetch("/api/domains");
+      if (!response.ok) throw new Error("Failed to fetch domains");
+      return response.json();
+    },
+    enabled: isSignedIn,
+  });
+
+  if (isLoaded && !isSignedIn) {
     redirect("/sign-in");
   }
 
-  const domains = await db.query.domains.findMany({
-    where: (domains, { eq }) => eq(domains.userId, userId),
-    orderBy: (domains, { desc }) => [desc(domains.createdAt)],
-  });
+  if (isLoading || !isLoaded) {
+    return (
+      <div className="container mx-auto max-w-6xl py-10">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-muted-foreground">Carregando...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto max-w-6xl py-10">

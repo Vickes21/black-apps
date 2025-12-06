@@ -1,50 +1,57 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect, notFound } from "next/navigation";
-import { db } from "@/lib/drizzle";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { notFound, redirect, useParams } from "next/navigation";
 import { DomainDetails } from "@/components/domain-details";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { domains, apps } from "@/lib/drizzle/schemas";
-import { eq, and } from "drizzle-orm";
+import { TDomain, TApp } from "@/lib/drizzle/schemas";
+import { useUser } from "@clerk/nextjs";
 
-interface DomainPageProps {
-  params: Promise<{
-    id: string;
-  }>;
+interface DomainData {
+  domain: TDomain;
+  apps: TApp[];
+  linkedApp: TApp | null;
 }
 
-export default async function DomainPage({ params }: DomainPageProps) {
-  const { userId } = await auth();
+export default function DomainPage() {
+  const { isLoaded, isSignedIn } = useUser();
+  const params = useParams();
+  const id = params.id as string;
 
-  if (!userId) {
+  const { data, isLoading, error } = useQuery<DomainData>({
+    queryKey: ["domain", id],
+    queryFn: async () => {
+      const response = await fetch(`/api/domains/${id}`);
+      if (!response.ok) {
+        if (response.status === 404) throw new Error("NOT_FOUND");
+        throw new Error("Failed to fetch domain");
+      }
+      return response.json();
+    },
+    enabled: isSignedIn && !!id,
+  });
+
+  if (isLoaded && !isSignedIn) {
     redirect("/sign-in");
   }
 
-  const { id } = await params;
-
-  const domain = await db.query.domains.findFirst({
-    where: and(
-      eq(domains.id, id),
-      eq(domains.userId, userId)
-    ),
-  });
-
-  if (!domain) {
+  if (error?.message === "NOT_FOUND") {
     notFound();
   }
 
-  const userApps = await db.query.apps.findMany({
-    where: eq(apps.userId, userId),
-    orderBy: (apps, { desc }) => [desc(apps.createdAt)],
-  });
-
-  let linkedApp = null;
-  if (domain.appId) {
-    linkedApp = await db.query.apps.findFirst({
-      where: eq(apps.id, domain.appId),
-    });
+  if (isLoading || !isLoaded || !data) {
+    return (
+      <div className="container mx-auto max-w-4xl py-10">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-muted-foreground">Carregando...</div>
+        </div>
+      </div>
+    );
   }
+
+  const { domain, apps: userApps, linkedApp } = data;
 
   return (
     <div className="container mx-auto max-w-4xl py-10">

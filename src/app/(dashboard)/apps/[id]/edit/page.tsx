@@ -1,40 +1,56 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect, notFound } from "next/navigation";
-import { db } from "@/lib/drizzle";
-import { apps } from "@/lib/drizzle/schemas";
-import { eq, and } from "drizzle-orm";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { redirect, notFound, useParams } from "next/navigation";
 import { EditAppForm } from "@/components/edit-app-form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+import { TApp, TDomain } from "@/lib/drizzle/schemas";
 
-interface EditAppPageProps {
-  params: Promise<{
-    id: string;
-  }>;
+interface AppData {
+  app: TApp;
+  domains: TDomain[];
 }
 
-export default async function EditAppPage({ params }: EditAppPageProps) {
-  const { userId } = await auth();
+export default function EditAppPage() {
+  const { isLoaded, isSignedIn } = useUser();
+  const params = useParams();
+  const id = params.id as string;
 
-  if (!userId) {
+  const { data, isLoading, error } = useQuery<AppData>({
+    queryKey: ["app", id, "with-domains"],
+    queryFn: async () => {
+      const response = await fetch(`/api/apps/${id}/with-domains`);
+      if (!response.ok) {
+        if (response.status === 404) throw new Error("NOT_FOUND");
+        throw new Error("Failed to fetch app");
+      }
+      return response.json();
+    },
+    enabled: isSignedIn && !!id,
+  });
+
+  if (isLoaded && !isSignedIn) {
     redirect("/sign-in");
   }
 
-  const { id } = await params;
-
-  const app = await db.query.apps.findFirst({
-    where: and(eq(apps.id, id), eq(apps.userId, userId)),
-  });
-
-  if (!app) {
+  if (error?.message === "NOT_FOUND") {
     notFound();
   }
 
-  const domains = await db.query.domains.findMany({
-    where: (domains, { eq }) => eq(domains.userId, userId),
-    orderBy: (domains, { desc }) => [desc(domains.createdAt)],
-  });
+  if (isLoading || !isLoaded || !data) {
+    return (
+      <div className="container mx-auto max-w-2xl py-10">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-muted-foreground">Carregando...</div>
+        </div>
+      </div>
+    );
+  }
+
+  const { app, domains } = data;
 
   return (
     <div className="container mx-auto max-w-2xl py-10">
