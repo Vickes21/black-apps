@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
         name: validatedData.name,
         embbedUrl: validatedData.embbedUrl,
         imageUrl: validatedData.imageUrl,
+        language: validatedData.language,
         domainId: validatedData.domainId || null,
         customDomain: validatedData.customDomain || null,
       })

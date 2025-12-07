@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getTranslation, type Language } from "@/lib/translations";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -9,9 +10,10 @@ interface BeforeInstallPromptEvent extends Event {
 
 interface InstallPromptProps {
   appName: string;
+  language?: Language;
 }
 
-export function InstallPrompt({ appName }: InstallPromptProps) {
+export function InstallPrompt({ appName, language = 'pt' }: InstallPromptProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -103,9 +105,9 @@ export function InstallPrompt({ appName }: InstallPromptProps) {
                 <line x1="12" y1="18" x2="12.01" y2="18" />
               </svg>
               <div className="flex-1">
-                <p className="font-semibold text-sm mb-1">Instalar {appName}</p>
+                <p className="font-semibold text-sm mb-1">{getTranslation(language, 'installApp', appName)}</p>
                 <p className="text-xs opacity-90 mb-2">
-                  Toca el botón de compartir{" "}
+                  {getTranslation(language, 'iosInstruction')}{" "}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="14"
@@ -122,7 +124,7 @@ export function InstallPrompt({ appName }: InstallPromptProps) {
                     <polyline points="16 6 12 2 8 6" />
                     <line x1="12" y1="2" x2="12" y2="15" />
                   </svg>{" "}
-                  y luego "Añadir a pantalla de inicio"
+                  {getTranslation(language, 'iosAction')}
                 </p>
               </div>
             </div>
@@ -173,8 +175,8 @@ export function InstallPrompt({ appName }: InstallPromptProps) {
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
           <div>
-            <p className="font-semibold text-sm">Instalar {appName}</p>
-            <p className="text-xs opacity-90">Accede más rápido desde tu pantalla de inicio</p>
+            <p className="font-semibold text-sm">{getTranslation(language, 'installApp', appName)}</p>
+            <p className="text-xs opacity-90">{getTranslation(language, 'accessFaster')}</p>
           </div>
         </div>
         <div className="flex gap-2 flex-shrink-0">
@@ -182,13 +184,13 @@ export function InstallPrompt({ appName }: InstallPromptProps) {
             onClick={handleDismiss}
             className="px-3 py-2 text-sm font-medium text-white/80 hover:text-white transition-colors"
           >
-            Ahora no
+            {getTranslation(language, 'notNow')}
           </button>
           <button
             onClick={handleInstall}
             className="px-4 py-2 bg-white text-blue-700 rounded-lg font-semibold text-sm hover:bg-blue-50 transition-all shadow-md"
           >
-            Instalar
+            {getTranslation(language, 'install')}
           </button>
         </div>
       </div>

@@ -25,6 +25,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { TDomain, TApp } from '@/lib/drizzle/schemas';
+import { SUPPORTED_LANGUAGES } from '@/lib/translations';
 
 interface EditAppFormProps {
   app: TApp;
@@ -41,6 +42,7 @@ export function EditAppForm({ app, domains }: EditAppFormProps) {
       name: app.name,
       embbedUrl: app.embbedUrl,
       imageUrl: app.imageUrl,
+      language: app.language || 'pt',
       domainId: app.domainId || null,
     },
   });
@@ -125,6 +127,37 @@ export function EditAppForm({ app, domains }: EditAppFormProps) {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="language"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Idioma</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione o idioma" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.entries(SUPPORTED_LANGUAGES).map(([code, name]) => (
+                    <SelectItem key={code} value={code}>
+                      {name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                Idioma usado nos textos de instalação do app
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -112,7 +112,7 @@ export function AppIframeViewer({ app }: AppIframeViewerProps) {
       />
 
       {/* Install Prompt Banner */}
-      <InstallPrompt appName={app.name} />
+      <InstallPrompt appName={app.name} language={app.language as any} />
     </div>
   );
 }

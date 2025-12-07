@@ -86,6 +86,7 @@ export async function PATCH(
         name: validatedData.name,
         embbedUrl: validatedData.embbedUrl,
         imageUrl: validatedData.imageUrl,
+        language: validatedData.language,
         domainId: validatedData.domainId || null,
       })
       .where(and(eq(apps.id, id), eq(apps.userId, userId)))

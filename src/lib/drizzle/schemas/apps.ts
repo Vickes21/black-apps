@@ -10,6 +10,9 @@ export const apps = pgTable('apps', {
   name: text('name').notNull(),
   embbedUrl: text('embbed_url').notNull(),
   imageUrl: text('image_url').notNull(),
+  language: text('language', {
+    enum: ['pt', 'en', 'es', 'fr', 'de']
+  }).notNull().default('pt'),
   domainId: uuid('domain_id'),
   customDomain: text('custom_domain').unique(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
