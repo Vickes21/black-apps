@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { AppIframeViewer } from "@/components/app-iframe-viewer";
 import { TApp } from "@/lib/drizzle/schemas";
@@ -8,36 +8,50 @@ import { TApp } from "@/lib/drizzle/schemas";
 export default function AppPage() {
   const params = useParams();
   const id = params?.id as string;
+  const [app, setApp] = useState<TApp | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   console.log("AppPage - params:", params);
   console.log("AppPage - id:", id);
-  console.log("AppPage - !!id:", !!id);
-  console.log("AppPage - typeof id:", typeof id);
 
-  const { data: app, isLoading, error, isError, fetchStatus } = useQuery<TApp>({
-    queryKey: ["public-app", id],
-    queryFn: async () => {
-      console.log("Query executing for id:", id);
+  useEffect(() => {
+    console.log("useEffect triggered for id:", id);
+    
+    if (!id) {
+      console.log("No id, skipping fetch");
+      return;
+    }
+
+    const fetchApp = async () => {
+      console.log("Starting fetch for id:", id);
+      setIsLoading(true);
       try {
         const response = await fetch(`/api/apps/public/${id}`);
         console.log("Response received:", response.status);
+        
         if (!response.ok) {
-          if (response.status === 404) throw new Error("NOT_FOUND");
+          if (response.status === 404) {
+            throw new Error("NOT_FOUND");
+          }
           throw new Error("Failed to fetch app");
         }
+        
         const data = await response.json();
         console.log("Data received:", data);
-        return data;
+        setApp(data);
       } catch (err) {
-        console.error("Query error:", err);
-        throw err;
+        console.error("Fetch error:", err);
+        setError(err as Error);
+      } finally {
+        setIsLoading(false);
       }
-    },
-    retry: 1,
-    staleTime: 0,
-  });
+    };
 
-  console.log("Query state:", { isLoading, isError, error, hasData: !!app, fetchStatus });
+    fetchApp();
+  }, [id]);
+
+  console.log("Render state:", { isLoading, error, hasData: !!app });
 
   if (isLoading || !app) {
     return (
