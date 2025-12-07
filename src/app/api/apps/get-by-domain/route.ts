@@ -5,8 +5,7 @@ import { eq, and } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const hostname = searchParams.get('hostname');
+    const hostname = request.nextUrl.searchParams.get('hostname');
 
     if (!hostname) {
       return NextResponse.json(
@@ -26,15 +25,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (!domain.appId) {
-      return NextResponse.json(
-        { error: 'No app linked to this domain' },
-        { status: 404 }
-      );
-    }
-
     const app = await db.query.apps.findFirst({
-      where: eq(apps.id, domain.appId),
+      where: eq(apps.domainId, domain.id),
     });
 
     if (!app) {
