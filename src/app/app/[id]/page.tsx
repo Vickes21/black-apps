@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { notFound, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { AppIframeViewer } from "@/components/app-iframe-viewer";
 import { TApp } from "@/lib/drizzle/schemas";
 
@@ -9,7 +9,7 @@ export default function AppPage() {
   const params = useParams();
   const id = params.id as string;
 
-  const { data: app, isLoading, error } = useQuery<TApp>({
+  const { data: app, isLoading } = useQuery<TApp>({
     queryKey: ["public-app", id],
     queryFn: async () => {
       const response = await fetch(`/api/apps/public/${id}`);
@@ -21,10 +21,6 @@ export default function AppPage() {
     },
     enabled: !!id,
   });
-
-  if (error?.message === "NOT_FOUND") {
-    notFound();
-  }
 
   if (isLoading || !app) {
     return (

@@ -10,6 +10,8 @@ export async function GET(
   try {
     const { id } = await params;
 
+    console.log('APP PUBLIC ID', id);
+
     const app = await db.query.apps.findFirst({
       where: eq(apps.id, id),
     });
