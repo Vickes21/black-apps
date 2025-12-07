@@ -9,10 +9,15 @@ export default function AppPage() {
   const params = useParams();
   const id = params.id as string;
 
-  const { data: app, isLoading } = useQuery<TApp>({
+  console.log("AppPage - params:", params);
+  console.log("AppPage - id:", id);
+
+  const { data: app, isLoading, error, isError } = useQuery<TApp>({
     queryKey: ["public-app", id],
     queryFn: async () => {
+      console.log("Query executing for id:", id);
       const response = await fetch(`/api/apps/public/${id}`);
+      console.log("Response status:", response.status);
       if (!response.ok) {
         if (response.status === 404) throw new Error("NOT_FOUND");
         throw new Error("Failed to fetch app");
@@ -21,6 +26,8 @@ export default function AppPage() {
     },
     enabled: !!id,
   });
+
+  console.log("Query state:", { isLoading, isError, error, hasData: !!app });
 
   if (isLoading || !app) {
     return (
