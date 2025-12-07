@@ -7,12 +7,14 @@ import { TApp } from "@/lib/drizzle/schemas";
 
 export default function AppPage() {
   const params = useParams();
-  const id = params.id as string;
+  const id = params?.id as string;
 
   console.log("AppPage - params:", params);
   console.log("AppPage - id:", id);
+  console.log("AppPage - !!id:", !!id);
+  console.log("AppPage - typeof id:", typeof id);
 
-  const { data: app, isLoading, error, isError } = useQuery<TApp>({
+  const { data: app, isLoading, error, isError, fetchStatus } = useQuery<TApp>({
     queryKey: ["public-app", id],
     queryFn: async () => {
       console.log("Query executing for id:", id);
@@ -24,10 +26,9 @@ export default function AppPage() {
       }
       return response.json();
     },
-    enabled: !!id,
   });
 
-  console.log("Query state:", { isLoading, isError, error, hasData: !!app });
+  console.log("Query state:", { isLoading, isError, error, hasData: !!app, fetchStatus });
 
   if (isLoading || !app) {
     return (
