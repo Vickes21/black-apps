@@ -22,9 +22,6 @@ export default function AppsPage() {
     enabled: isSignedIn,
   });
 
-  if (isLoaded && !isSignedIn) {
-    redirect("/sign-in");
-  }
 
   if (isLoading || !isLoaded) {
     return (

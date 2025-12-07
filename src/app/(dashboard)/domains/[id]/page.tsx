@@ -33,10 +33,6 @@ export default function DomainPage() {
     enabled: isSignedIn && !!id,
   });
 
-  if (isLoaded && !isSignedIn) {
-    redirect("/sign-in");
-  }
-
   if (error?.message === "NOT_FOUND") {
     notFound();
   }

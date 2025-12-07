@@ -22,10 +22,6 @@ export default function DomainsPage() {
     enabled: isSignedIn,
   });
 
-  if (isLoaded && !isSignedIn) {
-    redirect("/sign-in");
-  }
-
   if (isLoading || !isLoaded) {
     return (
       <div className="container mx-auto max-w-6xl py-10">

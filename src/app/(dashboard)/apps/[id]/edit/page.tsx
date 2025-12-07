@@ -32,10 +32,6 @@ export default function EditAppPage() {
     enabled: isSignedIn && !!id,
   });
 
-  if (isLoaded && !isSignedIn) {
-    redirect("/sign-in");
-  }
-
   if (error?.message === "NOT_FOUND") {
     notFound();
   }

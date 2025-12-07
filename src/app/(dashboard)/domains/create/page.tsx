@@ -1,12 +1,20 @@
-import { auth } from "@clerk/nextjs/server";
+"use client";
+
 import { redirect } from "next/navigation";
 import { CreateDomainForm } from '@/components/create-domain-form';
+import { useUser } from "@clerk/nextjs";
 
-export default async function CreateDomainPage() {
-  const { userId } = await auth();
+export default function CreateDomainPage() {
+  const { isLoaded, isSignedIn } = useUser();
 
-  if (!userId) {
-    redirect("/sign-in");
+  if (!isLoaded) {
+    return (
+      <div className="container mx-auto max-w-2xl py-10">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-muted-foreground">Carregando...</div>
+        </div>
+      </div>
+    );
   }
 
   return (
