@@ -52,11 +52,13 @@ export const installPromptTranslations = {
 } as const;
 
 export function getTranslation(language: Language, key: keyof typeof installPromptTranslations['pt'], appName?: string): string {
-  const translation = installPromptTranslations[language]?.[key] || installPromptTranslations.pt[key];
+  // Fallback to 'pt' if language is invalid or not found
+  const validLanguage = (language && installPromptTranslations[language]) ? language : 'pt';
+  const translation = installPromptTranslations[validLanguage][key];
   
-  if (appName && translation.includes('{appName}')) {
+  if (appName && translation && translation.includes('{appName}')) {
     return translation.replace('{appName}', appName);
   }
   
-  return translation;
+  return translation || '';
 }

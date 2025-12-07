@@ -20,6 +20,8 @@ export function InstallPrompt({ appName, language = 'pt' }: InstallPromptProps) 
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    console.log('[InstallPrompt] Component mounted with:', { appName, language });
+    
     // Detecta iOS
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     setIsIOS(iOS);
@@ -36,7 +38,9 @@ export function InstallPrompt({ appName, language = 'pt' }: InstallPromptProps) 
       iOS,
       standalone,
       userAgent: navigator.userAgent,
-      displayMode: window.matchMedia("(display-mode: standalone)").matches
+      displayMode: window.matchMedia("(display-mode: standalone)").matches,
+      appName,
+      language
     });
 
     // Para Android/Chrome
@@ -79,6 +83,8 @@ export function InstallPrompt({ appName, language = 'pt' }: InstallPromptProps) 
     const storageKey = `installPromptDismissed_${appName}`;
     localStorage.setItem(storageKey, "true");
   };
+
+  console.log('[InstallPrompt] Render check:', { showPrompt, isStandalone, willRender: showPrompt && !isStandalone });
 
   if (!showPrompt || isStandalone) return null;
 
