@@ -9,10 +9,12 @@ const isPublicRoute = createRouteMatcher([
 
 
 export default clerkMiddleware(async (auth, req) => {
-  if (isPublicRoute(req)) {
-    return NextResponse.next()
+  console.log('Proxy middleware called for:', req.url);
+  if (!isPublicRoute(req)) {
+
+    console.log('Protecting route:', req.url);
+    await auth.protect()
   }
-  await auth.protect()
 })
 
 
@@ -23,4 +25,5 @@ export const config = {
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],
+};
 };
