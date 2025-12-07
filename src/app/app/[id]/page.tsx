@@ -27,7 +27,17 @@ export default function AppPage() {
       console.log("Starting fetch for id:", id);
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/apps/public/${id}`);
+        // Usa URL absoluta para evitar problemas com proxy do Cloudflare Worker
+        const baseUrl = window.location.origin;
+        const apiUrl = `${baseUrl}/api/apps/public/${id}`;
+        
+        console.log("Fetching from:", apiUrl);
+        
+        const response = await fetch(apiUrl, {
+          headers: {
+            'X-Requested-From': 'app-page',
+          },
+        });
         console.log("Response received:", response.status);
         
         if (!response.ok) {
