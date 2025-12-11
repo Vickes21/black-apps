@@ -22,7 +22,7 @@ export async function GET(
     const manifest = {
       name: app.name,
       short_name: app.name,
-      description: `${app.name} - Black Apps`,
+      description: `${app.name}`,
       start_url: `/app/${id}`,
       display: "standalone",
       background_color: "#000000",

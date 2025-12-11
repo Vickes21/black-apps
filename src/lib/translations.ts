@@ -4,6 +4,8 @@ export const SUPPORTED_LANGUAGES = {
   es: 'Español',
   fr: 'Français',
   de: 'Deutsch',
+  nl: 'Nederlands',
+  it: 'Italiano',
 } as const;
 
 export type Language = keyof typeof SUPPORTED_LANGUAGES;
@@ -48,6 +50,22 @@ export const installPromptTranslations = {
     notNow: 'Nicht jetzt',
     iosInstruction: 'Tippen Sie auf die Schaltfläche "Teilen"',
     iosAction: 'dann "Zum Home-Bildschirm"',
+  },
+  nl: {
+    install: 'Installeren',
+    installApp: '{appName} installeren',
+    accessFaster: 'Sneller toegang vanaf uw startscherm',
+    notNow: 'Niet nu',
+    iosInstruction: 'Tik op de deelknop',
+    iosAction: 'en dan "Zet op beginscherm"',
+  },
+  it: {
+    install: 'Installa',
+    installApp: 'Installa {appName}',
+    accessFaster: 'Accedi più velocemente dalla schermata iniziale',
+    notNow: 'Non ora',
+    iosInstruction: 'Tocca il pulsante di condivisione',
+    iosAction: 'poi "Aggiungi a schermata Home"',
   },
 } as const;
 

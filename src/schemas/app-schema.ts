@@ -4,7 +4,7 @@ export const createAppSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   embbedUrl: z.string().url('URL inválida'),
   imageUrl: z.string().url('URL da imagem inválida'),
-  language: z.enum(['pt', 'en', 'es', 'fr', 'de']),
+  language: z.enum(['pt', 'en', 'es', 'fr', 'de', 'nl', 'it']),
   domainId: z.string().uuid('Domínio inválido').nullable().optional(),
   customDomain: z.string()
     .regex(/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i, 'Formato de domínio inválido')

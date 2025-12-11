@@ -11,7 +11,7 @@ export const apps = pgTable('apps', {
   embbedUrl: text('embbed_url').notNull(),
   imageUrl: text('image_url').notNull(),
   language: text('language', {
-    enum: ['pt', 'en', 'es', 'fr', 'de']
+    enum: ['pt', 'en', 'es', 'fr', 'de', 'nl', 'it']
   }).notNull().default('pt'),
   domainId: uuid('domain_id'),
   customDomain: text('custom_domain').unique(),
