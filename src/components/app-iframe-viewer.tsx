@@ -7,6 +7,7 @@ import { ArrowLeft, ExternalLink, HomeIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { InstallPrompt } from "@/components/app/install-prompt";
+import Script from "next/script";
 
 interface AppIframeViewerProps {
   app: TApp;
@@ -55,6 +56,10 @@ export function AppIframeViewer({ app }: AppIframeViewerProps) {
 
   return (
     <div className="relative h-screen w-screen flex flex-col">
+      {/* add to head */}
+
+      <Script src="https://unpkg.com/@ungap/custom-elements-builtin"></Script>
+      <Script src="https://unpkg.com/x-frame-bypass" type="module"></Script>
       {/* Header com controles */}
       <div className="absolute top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="flex items-center justify-between p-2">
@@ -102,6 +107,7 @@ export function AppIframeViewer({ app }: AppIframeViewerProps) {
 
       {/* Iframe */}
       <iframe
+        is="x-frame-bypass"
         src={app.embbedUrl}
         className="w-full h-full border-0 pt-[52px]"
         title={app.name}
@@ -112,9 +118,9 @@ export function AppIframeViewer({ app }: AppIframeViewerProps) {
       />
 
       {/* Install Prompt Banner */}
-      <InstallPrompt 
-        appName={app.name} 
-        language={(app.language || 'pt') as 'pt' | 'en' | 'es' | 'fr' | 'de'} 
+      <InstallPrompt
+        appName={app.name}
+        language={(app.language || 'pt') as 'pt' | 'en' | 'es' | 'fr' | 'de'}
       />
     </div>
   );
