@@ -59,7 +59,7 @@ export function AppIframeViewer({ app }: AppIframeViewerProps) {
       {/* add to head */}
 
       <Script strategy="beforeInteractive" src="https://unpkg.com/@ungap/custom-elements-builtin"></Script>
-      <Script strategy="beforeInteractive" src="https://niutech.github.io/x-frame-bypass/x-frame-bypass.js" type="module"></Script>
+      <Script strategy="beforeInteractive" src="https://pub-f0cc48b8044b4e37bf4b808aeb3c9cca.r2.dev/x-frame-bypass.js" type="module"></Script>
       {/* Header com controles */}
       <div className="absolute top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="flex items-center justify-between p-2">
