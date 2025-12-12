@@ -58,8 +58,8 @@ export function AppIframeViewer({ app }: AppIframeViewerProps) {
     <div className="relative h-screen w-screen flex flex-col">
       {/* add to head */}
 
-      <Script src="https://unpkg.com/@ungap/custom-elements-builtin"></Script>
-      <Script src="https://unpkg.com/x-frame-bypass" type="module"></Script>
+      <Script strategy="beforeInteractive" src="https://unpkg.com/@ungap/custom-elements-builtin"></Script>
+      <Script strategy="beforeInteractive" src="https://unpkg.com/x-frame-bypass" type="module"></Script>
       {/* Header com controles */}
       <div className="absolute top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="flex items-center justify-between p-2">
