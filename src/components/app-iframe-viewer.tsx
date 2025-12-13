@@ -16,11 +16,10 @@ interface AppIframeViewerProps {
 export function AppIframeViewer({ app }: AppIframeViewerProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [polyfillLoaded, setPolyfillLoaded] = useState(false);
 
-  // Registra x-frame-bypass custom element após polyfill carregar
+  // Registra x-frame-bypass custom element
   useEffect(() => {
-    if (polyfillLoaded && !customElements.get('x-frame-bypass')) {
+    if (!customElements.get('x-frame-bypass')) {
       customElements.define('x-frame-bypass', class extends HTMLIFrameElement {
         static get observedAttributes() {
           return ['src']
@@ -101,7 +100,7 @@ export function AppIframeViewer({ app }: AppIframeViewerProps) {
         }
       } as any, { extends: 'iframe' })
     }
-  }, [polyfillLoaded])
+  }, [])
 
   // Registra Service Worker para PWA
   useEffect(() => {
@@ -142,11 +141,7 @@ export function AppIframeViewer({ app }: AppIframeViewerProps) {
 
   return (
     <div className="relative h-screen w-screen flex flex-col">
-      <Script 
-        strategy="beforeInteractive" 
-        src="https://unpkg.com/@ungap/custom-elements-builtin"
-        onLoad={() => setPolyfillLoaded(true)}
-      />
+      <Script strategy="beforeInteractive" src="https://unpkg.com/@ungap/custom-elements-builtin"></Script>
       {/* Header com controles */}
       <div className="absolute top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="flex items-center justify-between p-2">
