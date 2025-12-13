@@ -67,25 +67,26 @@ export default {
         
         let content = await response.text();
         
-        // Reescreve URLs absolutas para passar pelo proxy
-        // https://destiny-drop-943.notion.site/... -> https://proxy.blackapps.online?url=https://destiny-drop-943.notion.site/...
+        // 1. Reescreve URLs absolutas do mesmo domínio
+        // "https://destiny-drop-943.notion.site/path" -> "https://proxy.blackapps.online?url=https://destiny-drop-943.notion.site/path"
         const domainPattern = targetUrlObj.hostname.replace(/\./g, '\\.');
         content = content.replace(
-          new RegExp(`(["'\`(])https?://${domainPattern}(/[^"'\`)]*)`, 'gi'),
+          new RegExp(`(["'\`\\s(])https?://${domainPattern}(/[^"'\`\\s)]*)?`, 'gi'),
           `$1${proxyBaseUrl}${baseUrl}$2`
         );
         
-        // Reescreve URLs relativas para absolutas através do proxy
-        // src="/_assets/..." -> src="https://proxy.blackapps.online?url=https://site.com/_assets/..."
+        // 2. Reescreve URLs relativas começando com /
+        // src="/_assets/file.js" -> src="https://proxy.blackapps.online?url=https://destiny-drop-943.notion.site/_assets/file.js"
+        // href="/path" -> href="https://proxy.blackapps.online?url=https://destiny-drop-943.notion.site/path"
         content = content.replace(
-          /(src|href|url|fetch|XMLHttpRequest\.open\([^,]+,\s*)["'\`]\/([^"'\`]*)/gi,
-          `$1"${proxyBaseUrl}${baseUrl}/$2`
+          /(src|href|url|content)=(["'])\/([^"']*)(["'])/gi,
+          `$1=$2${proxyBaseUrl}${baseUrl}/$3$4`
         );
-
-        // Reescreve fetch() e XMLHttpRequest com URLs relativas
+        
+        // 3. Reescreve URLs em CSS: url(/path)
         content = content.replace(
-          /fetch\s*\(\s*["'\`]\/([^"'\`]*)/gi,
-          `fetch("${proxyBaseUrl}${baseUrl}/$1`
+          /url\((["']?)\/([^)"']*)(["']?)\)/gi,
+          `url($1${proxyBaseUrl}${baseUrl}/$2$3)`
         );
 
         return new Response(content, {
